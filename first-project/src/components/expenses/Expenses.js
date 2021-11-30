@@ -1,4 +1,4 @@
-import ExpenseItem from "./ExpenseItem";
+import ExpensesList from "./ExpensesList";
 import classes from "./Expenses.module.css";
 import ExpenseFilter from "./ExpenseFilter";
 import { useState } from "react";
@@ -9,25 +9,20 @@ function Expenses(props) {
 
   function changeYearHandler(filteredYear) {
     setChosenYear(filteredYear);
-    console.log(chosenYear)
-    console.log(filteredYear)
-    //props.onFilterYear(chosenYear);
-    props.onFilterYear(filteredYear) // on ten rok ale dal neposouva! nechava ho v Expenses.js
   }
+
+
+  // jde nam o OUTPUTTING CONDITIONAL CONTENT -> ExpenseList
+  const filteredExpenses = props.expenses.filter((expense) => {
+    return expense.date.getFullYear().toString() === chosenYear;
+  });
 
   return (
     //<Card>
     <div className={classes.expenses}>
       <ExpenseFilter selected={chosenYear} onChangeYear={changeYearHandler} />
       <div>
-        {props.expenses.map((expense) => (
-          <ExpenseItem
-            key={expense.id}
-            date={expense.date}
-            title={expense.title}
-            amount={expense.amount}
-          />
-        ))}
+        <ExpensesList items={filteredExpenses}/>
       </div>
     </div>
     // </Card>
@@ -35,6 +30,26 @@ function Expenses(props) {
 }
 
 export default Expenses;
+
+/*
+Misto toho && operatoru, lze pouzit i ternary operator:
+<div>
+        {props.expenses.length === 0 ? (
+          <p>No expenses found</p>
+        ) : (
+          props.expenses.map((expense) => (
+            <ExpenseItem
+              key={expense.id}
+              date={expense.date}
+              title={expense.title}
+              amount={expense.amount}
+            />
+          ))
+        )}
+      </div>
+
+A nebo to jde vyresit i pomoci te variable let expensesContent (to se presunulo do ExpensesList)
+*/
 
 /*
 DULEZITA POZNAMKA NA DALSI TWO-WAY BINDING:

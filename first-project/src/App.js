@@ -31,17 +31,39 @@ function App() {
   function addNewExpanseHandler(dataExpenses) {
     //setExpenses([dataExpenses, ...expenses]) - spread operator. ale takhle to neni uplne spravne (muze to nekdy delat chybu)
     setExpenses((prevExpenses) => {
-      return [dataExpenses, ...prevExpenses]; // viz pozn A.
-
-    });
+      return [dataExpenses, ...prevExpenses];
+    }); // viz pozn A.
   }
 
-  const [filteredData,setFilteredData] = useState([...expenses])
-  function changeYearHandler(chosenYear) {
-    const filteredExpenses = expenses.filter(element => {return element.date.getFullYear() === parseInt(chosenYear)});
-    console.log(filteredExpenses)
-    setFilteredData(filteredExpenses)
+  return (
+    <div>
+      <NewExpense onAddExpenseDateWithID={addNewExpanseHandler} />
+      <Expenses expenses={expenses} />
+    </div>
+  );
+}
 
+export default App;
+
+//------------------------------------------------------------------------
+/*
+JA TO MELA TAKHLE:
+function App() {
+  const [expenses, setExpenses] = useState(DUMMY_EXPENSES);
+
+  // takhle udelame dynamic list:
+  function addNewExpanseHandler(dataExpenses) {
+    //setExpenses([dataExpenses, ...expenses]) - spread operator. ale takhle to neni uplne spravne (muze to nekdy delat chybu)
+    setExpenses((prevExpenses) => { return [dataExpenses, ...prevExpenses]}); // viz pozn A.
+    setFilteredData((prevExpenses) => { return [dataExpenses, ...prevExpenses]});
+  }
+
+  const [filteredData, setFilteredData] = useState([...expenses]);
+  function changeYearHandler(thatYear) {
+    const filteredExpenses = expenses.filter((element) => {
+      return element.date.getFullYear() === parseInt(thatYear);
+    });
+    setFilteredData(filteredExpenses);
   }
 
   return (
@@ -52,9 +74,58 @@ function App() {
   );
 }
 
-export default App;
 
-//------------------------------------------------------------------------
+A V EXPENSES:
+function Expenses(props) {
+  const [chosenYear, setChosenYear] = useState("2020");
+
+  function changeYearHandler(filteredYear) {
+    setChosenYear(filteredYear);
+    //props.onFilterYear(chosenYear); // budu si nakonec forwardovat ten filteredYear,
+    // protoze chosenYear je o krok zpozdeny kvuli asynchronnimu useState.
+
+    props.onFilterYear(filteredYear); // on ten rok ale dal neposouva! nechava ho v Expenses.js
+  }
+
+  
+  On pak udelal jen zde:
+  const filteredExpenses=props.expenses.filter((expense)=> {
+    return expense.date.getFullYear().toString() === filteredYear;
+  });
+  A pak v divu nize ma:<div>{filteredExpenses.map((expense)=> (ExpenseItem...))}
+  
+
+  return (
+    //<Card>
+    <div className={classes.expenses}>
+      <ExpenseFilter selected={chosenYear} onChangeYear={changeYearHandler} />
+      <div>
+        {props.expenses.length === 0 && <p>No expenses found</p>}
+        {props.expenses.length > 0 &&
+          props.expenses.map((expense) => (
+            <ExpenseItem
+              key={expense.id}
+              date={expense.date}
+              title={expense.title}
+              amount={expense.amount}
+            />
+          ))}
+      </div>
+    </div>
+    // </Card>
+  );
+}
+
+export default Expenses;
+
+TA JEHO VERZE JE LEPSI:
+Ja kdyz jsem si filtrovala a pak jsem pridala dalsi polozku, tak se mi zobrazila
+i s temi vyfiltrovanymi polozkami z jinych let.
+
+*/
+
+//-------------------------------------------------------------------
+
 /*
 KDYZ POUZIVAME MAP METODU NA NEJAKY ARRAY JE POTREBA PRIDAT KEY!
 Kdyz nemam nastaveny key a pridavam dalsi polozky, tak se mi pokazde zaktualizuje cely list polozek,
@@ -74,6 +145,8 @@ Ale vetsinou to neni problem (mit ID), protoze bereme data z databaze a tam maji
 
 */
 
+//-------------------------------------------------------------------
+
 /*
 Pozn. A
 Expenses ted budou zacinat novymi expenses.
@@ -84,6 +157,8 @@ A kdyz to napisu takhle: {return [dataExpenses, prevExpenses]} tak to taky vyhod
 si neumi poradit s tim ze mu na jeden index arraye cpu vice veci.
 
 */
+
+//-------------------------------------------------------------------
 
 /*
 Why we use useState instead of JS variables:
@@ -100,7 +175,7 @@ If you update state that depends on the previous state, you shuld use the "funct
 of the state updating function instead:
 setCounter((prevValue)=>{return prevValue+1})
 */
-
+//-------------------------------------------------------------------
 /*
 My jsme pomoci child-to-parent communication poslali do App z NewExpense ty expenseData zadane uzivatelem.
 A to expenses by je ted melo zacit pouzivat, ale to neni tak jednoduche,
@@ -108,12 +183,12 @@ protoze vztah mezi Expenses a NewExpense je SIBLING.
 
 Dale jsme taky poslali z ExpenseFilter do Expense a pak do App ten chosenYear.
 */
-
+//-------------------------------------------------------------------
 /*
 Tady to forwardovani dat nahoru se nazyva LIFTING STATE UP.
 Ty data pak muzeme PASS DATA VIA PROPS do siblingu.
 */
-
+//-------------------------------------------------------------------
 /*
 - Controlled vs uncontrolled components:
 ExpenseFilter - uncontrolled (nedeje se v nem zadna ta "logika", values i eventhadlers are passed to parent component)

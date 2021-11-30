@@ -2,17 +2,18 @@ import classes from "./ExpenseItem.module.css";
 import ExpenseDate from "./ExpenseDate";
 //import Card from "../ui/Card";
 
+// On mel return( <li> <Card> <div ..), ale mne ten Card moc nefunguje (protoze pouzivam ty moduly)
 function ExpenseItem(props) {
   return (
-    //<Card>
-    <div className={classes.expenseItem}>
-      <ExpenseDate date={props.date} />
-      <div className={classes.description}>
-        <h2>{props.title}</h2>
-        <div className={classes.price}>${props.amount}</div>
+    <li>
+      <div className={classes.expenseItem}>
+        <ExpenseDate date={props.date} />
+        <div className={classes.description}>
+          <h2>{props.title}</h2>
+          <div className={classes.price}>${props.amount}</div>
+        </div>
       </div>
-    </div>
-    //</Card>
+    </li>
   );
 }
 
