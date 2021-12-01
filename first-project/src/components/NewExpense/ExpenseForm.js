@@ -22,10 +22,11 @@ function ExpenseForm(props) {
     event.preventDefault(); // kdybychom tam nechali to Default(), tak se to reloaduje
     const expenseData = {
       title: enteredTitle,
-      amount: enteredAmount,
+      amount: +enteredAmount, // values were added as strings instead of numbers, proto jsme tam pridali to +
+      // converting a string to integer can be done by unary plus if the string is already in the form of an integer
       date: new Date(enteredDate),
     };
-    props.onAddExpenseDate(expenseData)
+    props.onAddExpenseDate(expenseData);
     setEnteredTitle("");
     setEnteredAmount("");
     setEnteredDate("");
@@ -36,7 +37,11 @@ function ExpenseForm(props) {
       <div className={classes.controls}>
         <div className={classes.control}>
           <label>Title</label>
-          <input type="text" value={enteredTitle} onChange={titleInputHandler} />
+          <input
+            type="text"
+            value={enteredTitle}
+            onChange={titleInputHandler}
+          />
         </div>
         <div className={classes.control}>
           <label>Amount</label>
@@ -60,6 +65,9 @@ function ExpenseForm(props) {
         </div>
       </div>
       <div className={classes.actions}>
+        <button type="button" onClick={props.cancelHandlerButton}>
+          Cancel
+        </button>
         <button type="submit">Add Expense</button>
       </div>
     </form>
@@ -67,6 +75,10 @@ function ExpenseForm(props) {
 }
 
 export default ExpenseForm;
+
+/*
+Ten button Cancel nesmi byt submit, aby mi nesubmitoval formular. je to jen type='button'
+*/
 
 /*
 TED POTREBUJEME PASSNOUT EXPENSE DATA DO EXPENSES. - TZN. CHILD-TO-PARENT COMMUNICATION:
@@ -98,7 +110,6 @@ Two-way binding just means that:
 When properties in the model get updated, so does the UI. -> to je to nase nastaveni na '' po submitovani formy.
 When UI elements get updated, the changes get propagated back to the model. -> to je to nacteni inputu do nasich dat.
 */
-
 
 /*
 POZN: 
